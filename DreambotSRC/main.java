@@ -97,10 +97,11 @@ public class main extends AbstractScript implements AdvancedMessageListener{
 	private static java.net.Socket s = null;; 
 
 	private ServerSocket serverSocket = null;
-	public InputStreamReader reader;
+	private DataOutputStream out;
+    private BufferedReader in;
 	public String str2 = null;
-	public PrintWriter out;
-	public BufferedReader in;
+	
+	
 	
 	public void onStart() {
 		try
@@ -112,14 +113,12 @@ public class main extends AbstractScript implements AdvancedMessageListener{
        
   
             // takes input from the client socket 
-            InputStream input = s.getInputStream();
-            in = new BufferedReader(new InputStreamReader(input));
-            reader = new InputStreamReader(input);
-            out = new PrintWriter(s.getOutputStream());
-  
-            str2 = ""; 
+            s = serverSocket.accept();
+            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            log("It has connected to the client: " + s.getRemoteSocketAddress());
+//            str2 = ""; 
 
- 
+            
         } 
         catch(IOException i) 
         { 
@@ -196,23 +195,31 @@ public class main extends AbstractScript implements AdvancedMessageListener{
 			
 		}
 	}
-	 
+	
+	class readFile{
+		
+		public void readName() throws IOException {
+			//Null Check
+			if((str2 = in.readLine()) != null) {
+					checkRSN1 = true;
+					log(str2);
+			}
+				
+		}
+	}
 	  
 	@Override
 	public int onLoop() {
 	int bid = 0;
 	
-	while(true) {
-		   try {
-			s = serverSocket.accept();
-			log("Client accepted");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-            
-	}
+	readFile read = new readFile();
 	
+	try {
+		read.readName();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 //	try
 //	{
 //		if((str2 = in.readLine()) != null) {
@@ -229,7 +236,7 @@ public class main extends AbstractScript implements AdvancedMessageListener{
 //	log("Fuck");
 //	}
 
-
+		return 500;
 	}
 	
 
