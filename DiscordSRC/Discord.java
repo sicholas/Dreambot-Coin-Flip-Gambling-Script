@@ -42,16 +42,15 @@ public class Discord extends ListenerAdapter {
    public boolean hasTraded2 = false;
    public User firstUser = null;
    public User secondUser = null;
-   public static ServerSocket ss;
-	
-	
+
+   	public static ServerSocket ss;
 	public static String address = "localhost";
-	
     public static int port = 25000;
-    public static PrintWriter out;
-	public static BufferedReader in;
     private static java.net.Socket s = null; 
    
+    private static PrintWriter out;
+    private static BufferedReader in;
+    
    public static void main(String[] args) throws LoginException {
        JDABuilder builder = new JDABuilder();
        builder.setToken("NTk2NTU1MTAyMjU3NDE0MTUz.Xf1sAg.LTVmTUrEDdLk_oZEFN5uGpiUyK8");
@@ -64,9 +63,9 @@ public class Discord extends ListenerAdapter {
     	   
     	   s = new Socket(address, 12345);
     	   System.out.println("Connected.");
-    	   OutputStream output = s.getOutputStream();
+    	
+    	   out = new PrintWriter(s.getOutputStream(), true);
     	   in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-           out = new PrintWriter(output, true);
            
            
 		
@@ -126,9 +125,10 @@ public class Discord extends ListenerAdapter {
     	   
     	   String RSN = msg.getContentRaw().replaceFirst("!RSN ", "");
     	   String magin = "";
+    	   out.println(RSN);
     	   System.out.println(RSN);
-    	   out.write(RSN);
-    	   out.write(betActual);
+    	   
+    	   
     	   
 //    	   try {
 //			oos.writeObject(RSN);
@@ -168,38 +168,44 @@ public class Discord extends ListenerAdapter {
        
        
        
-       if(msg.getContentRaw().equals("!match") && !msg.getAuthor().isBot() && hasTraded1 == true ) {
+       if(msg.getContentRaw().equals("!match") && !msg.getAuthor().isBot() && hasTraded1 == true ) { 
     	   
     	   secondUser = msg.getAuthor();
     	   channel.sendMessage("A match between " + firstUser.getAsMention() + " & " + secondUser.getAsMention() + " @ a flip of "+ (betActual)/1000 + "k.").queue();
     	   int rollNumber = 1 + (int)(Math.random() * ((100 - 1) + 1));
     	   System.out.println(rollNumber);
+    	   
     	   try {
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+    	   } catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+    	   }
     	   channel.sendMessage("Rolling now!").queue();
+    	   
     	   try {
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+    	   } catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+    	   }  
+    	   
     	   int takeHome = 2 * (int)Math.round(betActual *.9);
+    	   
     	   if(rollNumber < 51) {
     		   channel.sendMessage(firstUser.getAsMention() + " has won " + ((2*betActual)/1000 * .9) + "k.").queue();
     		   Checkbet = false;
     		   startBet = false;
     	   }
+    	   
+    	   
     	   if(rollNumber > 51) {
     		   channel.sendMessage(secondUser.getAsMention() + " has won " + ((2*betActual)/1000 * .9) + "k.").queue();
     		   Checkbet = false;
     		   startBet = false;
     	   }
     	   
-//    			   Checkbet = false;
+    	   
        }
    }
 }
