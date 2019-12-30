@@ -37,9 +37,9 @@ public class Discord extends ListenerAdapter {
    public boolean Checkbet = false;
    public int betActual;
    public boolean firstRSN = false;
-   public boolean hasTraded1 = false;
+   public int hasTraded1 = 0;
    public boolean secondRSN = false;
-   public boolean hasTraded2 = false;
+   public int hasTraded2 = 0;
    public User firstUser = null;
    public User secondUser = null;
 
@@ -61,11 +61,11 @@ public class Discord extends ListenerAdapter {
        builder.build();
        try{      
     	   
-    	   s = new Socket(address, 12345);
+    	   s = new Socket(address, 54321);
     	   System.out.println("Connected.");
     	
-    	   out = new PrintWriter(s.getOutputStream(), true);
     	   in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+           out = new PrintWriter(s.getOutputStream(), true);
            
            
 		
@@ -127,8 +127,19 @@ public class Discord extends ListenerAdapter {
     	   String magin = "";
     	   out.println(RSN);
     	   System.out.println(RSN);
-    	   
-    	   
+    	   try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	   out.println(betActual);
+    	   try {
+   			Thread.sleep(2000);
+   		} catch (InterruptedException e) {
+   			// TODO Auto-generated catch block
+   			e.printStackTrace();
+   		}
     	   
 //    	   try {
 //			oos.writeObject(RSN);
@@ -151,15 +162,15 @@ public class Discord extends ListenerAdapter {
 		   
 		
 		  
-//  		   try {
-//			hasTraded1 = din.readBoolean();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+  		   try {
+			 hasTraded1 = in.read();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     		
        }
-       if(hasTraded1 == true) {
+       if(hasTraded1 == 1) {
     	   channel.sendMessage(check.getAsMention() + " has traded " + betActual + "! To play against him, type !match");
        }
        
@@ -168,7 +179,7 @@ public class Discord extends ListenerAdapter {
        
        
        
-       if(msg.getContentRaw().equals("!match") && !msg.getAuthor().isBot() && hasTraded1 == true ) { 
+       if(msg.getContentRaw().equals("!match") && !msg.getAuthor().isBot() && hasTraded1 == 1 ) { 
     	   
     	   secondUser = msg.getAuthor();
     	   channel.sendMessage("A match between " + firstUser.getAsMention() + " & " + secondUser.getAsMention() + " @ a flip of "+ (betActual)/1000 + "k.").queue();
@@ -188,7 +199,8 @@ public class Discord extends ListenerAdapter {
     	   } catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    	   }  
+    	   }
+  
     	   
     	   int takeHome = 2 * (int)Math.round(betActual *.9);
     	   
